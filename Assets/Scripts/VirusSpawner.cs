@@ -6,13 +6,9 @@ public class VirusSpawner : MonoBehaviour
     public GameObject virusPrefab;
 
     public float spawnInterval = 1.2f;
-    public float minX = -8.8f;
-    public float maxX = 8.8f;
-    public float spawnY = 6f;
-
     public bool canSpawn = true;
 
-    public float minSpacing = 1.5f; 
+    public float minSpacing = 1.5f;
 
     private float timer;
     private List<Vector3> recentSpawnPositions = new List<Vector3>();
@@ -24,10 +20,9 @@ public class VirusSpawner : MonoBehaviour
 
     void Update()
     {
-        if (!canSpawn){
+        if (!canSpawn)
             return;
-        }
-        
+
         timer -= Time.deltaTime;
 
         if (timer <= 0f)
@@ -39,9 +34,22 @@ public class VirusSpawner : MonoBehaviour
 
     void SpawnVirus()
     {
+        Camera cam = Camera.main;
+
+        
+        Vector3 leftEdge = cam.ViewportToWorldPoint(new Vector3(0, 0.5f, cam.nearClipPlane + 10f));
+        Vector3 rightEdge = cam.ViewportToWorldPoint(new Vector3(1, 0.5f, cam.nearClipPlane + 10f));
+
+        float minX = leftEdge.x;
+        float maxX = rightEdge.x;
+
+        
+        Vector3 topEdge = cam.ViewportToWorldPoint(new Vector3(0.5f, 1f, cam.nearClipPlane + 10f));
+        float spawnY = topEdge.y + 1f;
+
         Vector3 spawnPos;
 
-       
+        
         for (int i = 0; i < 10; i++)
         {
             float x = Random.Range(minX, maxX);
@@ -52,7 +60,6 @@ public class VirusSpawner : MonoBehaviour
                 Instantiate(virusPrefab, spawnPos, Quaternion.identity);
                 recentSpawnPositions.Add(spawnPos);
 
-                
                 if (recentSpawnPositions.Count > 10)
                     recentSpawnPositions.RemoveAt(0);
 

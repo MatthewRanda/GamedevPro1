@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class WaveTimer : MonoBehaviour
 {
@@ -8,30 +9,37 @@ public class WaveTimer : MonoBehaviour
 
     public TMP_Text timerText;             
     public CellHealth cellHealth;          
-    public VirusSpawner spawner;           
+    public VirusSpawner spawner;
+
+    public GameObject roundCompletePanel;
+    public GameObject gameOverPanel;
 
     void Start()
     {
         timer = waveDuration;
-        UpdateTimerUI();                   
+        UpdateTimerUI();
+
+        if (roundCompletePanel != null)
+            roundCompletePanel.SetActive(false);
+
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(false);
+
+        Time.timeScale = 1f;
     }
 
     void Update()
     {
-        
         timer -= Time.deltaTime;
 
-        
         UpdateTimerUI();
 
-        
         if (timer <= 0f)
         {
             timer = 0f;
             WaveComplete();
         }
 
-        
         if (cellHealth.currentHealth <= 0)
         {
             GameOver();
@@ -50,22 +58,29 @@ public class WaveTimer : MonoBehaviour
 
     void WaveComplete()
     {
-        Debug.Log("Wave complete! You survived!");
-
         if (spawner != null)
             spawner.canSpawn = false;
 
-       
+        if (roundCompletePanel != null)
+            roundCompletePanel.SetActive(true);
+
+        Time.timeScale = 0f;
     }
 
     void GameOver()
     {
-        Debug.Log("Game Over! The cell died.");
-
-        
         if (spawner != null)
             spawner.canSpawn = false;
 
-        
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(true);
+
+        Time.timeScale = 0f;
+    }
+
+    public void RestartRound()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
